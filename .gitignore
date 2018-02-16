@@ -29,7 +29,6 @@ __pycache__/
 
 #zip
 *.zip
-
 # C extensions
 *.so
 
@@ -38,7 +37,6 @@ __pycache__/
 env/
 
 develop-eggs/
-downloads/
 eggs/
 .eggs/
 lib64/
@@ -147,3 +145,8 @@ kernel*.json
 # packge-lock
 
 .\vs
+
+
+
+# sqlite database
+*.db

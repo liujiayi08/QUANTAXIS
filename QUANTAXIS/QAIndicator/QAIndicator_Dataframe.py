@@ -2,7 +2,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2016-2017 yutiansut/QUANTAXIS
+# Copyright (c) 2016-2018 yutiansut/QUANTAXIS
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -133,7 +133,7 @@ def QA_indicator_MFI(DataFrame, N=14):
     V1 = SUM(IF(TYP > REF(TYP, 1), TYP * VOL, 0), N) / \
         SUM(IF(TYP < REF(TYP, 1), TYP * VOL, 0), N)
     mfi = 100 - (100 / (1 + V1))
-    DICT = [{'MFI': mfi}]
+    DICT = {'MFI': mfi}
 
     return DICT
 
@@ -303,3 +303,23 @@ def price_pcg(DataFrame):
 
 def amplitude(DataFrame):
     return (DataFrame.high - DataFrame.low) / DataFrame.low
+
+
+# def QA_indicator_LAST(dataframe, text, N=0, M=0):
+#     return len(dataframe.iloc[-N:-M, :].query(text))
+
+
+# def QA_indicator_COUNT(dataframe, text, N=10):
+#     """[summary]
+#     函数：COUNT(X,N) 参数： X为数组，N为计算周期
+#     说明：统计N周期中满足X条件的周期数,若N=0则从第一个有效值开始。 
+#     示例：COUNT(CLOSE>OPEN,20);表示统计20周期内收阳的周期数。
+#     Arguments:
+#         dataframe {[type]} -- [description]
+#         text {[type]} -- [description]
+
+#     Keyword Arguments:
+#         N {[type]} -- [description] (default: {10})
+#     """
+
+#     return len(dataframe.tail(N).query(text))

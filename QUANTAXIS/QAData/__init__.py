@@ -2,7 +2,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2016-2017 yutiansut/QUANTAXIS
+# Copyright (c) 2016-2018 yutiansut/QUANTAXIS
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,6 @@ from QUANTAXIS.QAData.QADataStruct import (QA_DataStruct_Index_day,
                                            QA_DataStruct_Stock_block,
                                            QA_DataStruct_Stock_day,
                                            QA_DataStruct_Stock_min,
-                                           QA_DataStruct_future_day,
-                                           QA_DataStruct_future_min,
+                                           QA_DataStruct_Future_day,
+                                           QA_DataStruct_Future_min,
                                            QA_DataStruct_Stock_transaction)
