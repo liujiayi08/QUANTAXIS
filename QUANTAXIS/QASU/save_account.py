@@ -41,21 +41,6 @@ def save_account(message, collection=DATABASE.account):
     collection.save(message)
 
 
-def query_account(query_mes, collection=DATABASE.account):
-    """get the account
-    
-    Arguments:
-        query_mes {[type]} -- [description]
-    
-    Keyword Arguments:
-        collection {[type]} -- [description] (default: {DATABASE})
-    
-    Returns:
-        [type] -- [description]
-    """
-
-    return collection.find(query_mes)
-
 
 def update_account(mes, collection=DATABASE.account):
     """update the account with account message
@@ -68,3 +53,7 @@ def update_account(mes, collection=DATABASE.account):
     """
 
     collection.find_one_and_update({'account_cookie': mes['account_cookie']})
+
+
+def save_riskanalysis(message,collection=DATABASE.risk):
+    collection.save(message)

@@ -21,7 +21,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+import pandas as pd
 from QUANTAXIS.QAARP.QAPortfolio import QA_Portfolio
 from QUANTAXIS.QAUtil.QALogs import QA_util_log_info
 from QUANTAXIS.QAUtil.QARandom import QA_util_random_with_topic
@@ -41,6 +41,10 @@ class QA_User():
     def __repr__(self):
         return '< QA_USER {} with {} portfolio >'.format(self.user_cookie, len(self.portfolio_list.keys()))
 
+    @property
+    def table(self):
+        return pd.concat([po.table for po in self.portfolio_list.values()], axis=1)
+
     def client(self):
         'user.client to connect database'
         return self.setting.client
@@ -58,7 +62,7 @@ class QA_User():
 
     def new_portfolio(self):
         'create a portfolio'
-        _portfolio = QA_Portfolio()
+        _portfolio = QA_Portfolio(user_cookie=self.user_cookie)
         if _portfolio.portfolio_cookie not in self.portfolio_list.keys():
             self.portfolio_list[_portfolio.portfolio_cookie] = _portfolio
             return _portfolio
@@ -68,17 +72,22 @@ class QA_User():
         return self.portfolio_list[portfolio]
 
     def generate_simpleaccount(self):
-        'make a simple account with a easier way'
+        """make a simple account with a easier way
+        如果当前user中没有创建portfolio, 则创建一个portfolio,并用此portfolio创建一个account
+        如果已有一个或多个portfolio,则使用第一个portfolio来创建一个account
+        """
         if len(self.portfolio_list.keys()) < 1:
             po = self.new_portfolio()
-            ac = po.new_account()
-            return ac, po
+        else:
+            po = list(self.portfolio_list.values())[0]
+        ac = po.new_account()
+        return ac, po
 
     def register_account(self, account):
         if len(self.portfolio_list.keys()) < 1:
             po = self.new_portfolio()
         else:
-            po = self.portfolio_list.values()[0]
+            po = list(self.portfolio_list.values())[0]
         po.add_account(account)
         return (po, account)
 

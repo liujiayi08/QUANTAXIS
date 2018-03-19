@@ -22,6 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import datetime
+import re
 
 import pandas as pd
 from pandas import DataFrame
@@ -31,8 +33,8 @@ from QUANTAXIS.QAData import (QA_DataStruct_Index_day, QA_DataStruct_Index_min,
                               QA_DataStruct_Stock_day, QA_DataStruct_Stock_min,
                               QA_DataStruct_Stock_transaction)
 from QUANTAXIS.QAFetch.QAQuery import (QA_fetch_indexlist_day,
-                                       QA_fetch_stocklist_day,
                                        QA_fetch_stock_full,
+                                       QA_fetch_stocklist_day,
                                        QA_fetch_stocklist_min)
 from QUANTAXIS.QAUtil import (DATABASE, QA_Setting, QA_util_date_stamp,
                               QA_util_date_valid, QA_util_log_info,
@@ -42,17 +44,22 @@ from QUANTAXIS.QAUtil import (DATABASE, QA_Setting, QA_util_date_stamp,
 按要求从数据库取数据，并转换成numpy结构
 
 """
+# start='1990-01-01',end=str(datetime.date.today())
 
 
 def QA_fetch_stock_day_adv(
         code,
-        start, end=None,
+        start='all', end=None,
         if_drop_index=False,
         collections=DATABASE.stock_day):
     '获取股票日线'
     end = start if end is None else end
     start = str(start)[0:10]
     end = str(end)[0:10]
+
+    if start == 'all':
+        start = '1990-01-01'
+        end = str(datetime.date.today())
 
     if isinstance(code, str):
         if QA_util_date_valid(end) == True:
@@ -77,10 +84,14 @@ def QA_fetch_stock_day_adv(
 
 def QA_fetch_stocklist_day_adv(
         code,
-        start, end=None,
+        start='all', end=None,
         if_drop_index=False,
         collections=DATABASE.stock_day):
     '获取股票日线'
+
+    if start == 'all':
+        start = '1990-01-01'
+        end = str(datetime.date.today())
     return QA_DataStruct_Stock_day(pd.concat(QA_fetch_stocklist_day(code, [start, end])).query('volume>1').set_index(['date', 'code'], drop=if_drop_index).sort_index())
 
 
@@ -137,9 +148,12 @@ def QA_fetch_stocklist_min_adv(
         if_drop_index=False,  collections=DATABASE.stock_min):
     return QA_DataStruct_Stock_min(pd.concat(QA_fetch_stocklist_min(code, [start, end], frequence)).query('volume>1').set_index(['datetime', 'code'], drop=if_drop_index).sort_index())
 
+
 def QA_fetch_stock_day_full_adv(date):
     '返回全市场某一天的数据'
-    return QA_DataStruct_Stock_day(QA_fetch_stock_full(date,'pd').set_index(['date','code'],drop=False))
+    return QA_DataStruct_Stock_day(QA_fetch_stock_full(date, 'pd').set_index(['date', 'code'], drop=False))
+
+
 def QA_fetch_index_day_adv(
         code,
         start, end=None,
@@ -239,11 +253,26 @@ def QA_fetch_stock_list_adv(collections=DATABASE.stock_list):
     return pd.DataFrame([item for item in collections.find()]).drop('_id', axis=1, inplace=False)
 
 
-def QA_fetch_stock_block_adv(code=None, collections=DATABASE.stock_block):
-    if code is not None:
+def QA_fetch_stock_block_adv(code=None, blockname=None, collections=DATABASE.stock_block):
+    """返回板块
+
+    Keyword Arguments:
+        code {[type]} -- [description] (default: {None})
+        blockname {[type]} -- [descrioption] (default : {None})
+        collections {[type]} -- [description] (default: {DATABASE})
+
+    Returns:
+        [type] -- [description]
+    """
+
+    if code is not None and blockname is None:
         data = pd.DataFrame([item for item in collections.find(
             {'code': code})]).drop(['_id'], axis=1)
         return QA_DataStruct_Stock_block(data.set_index('code', drop=False).drop_duplicates())
+    elif blockname is not None and code is None:
+
+        data = pd.DataFrame([item for item in collections.find(
+            {'blockname': re.compile(blockname)})]).drop(['_id'], axis=1)
     else:
         data = pd.DataFrame(
             [item for item in collections.find()]).drop(['_id'], axis=1)

@@ -22,9 +22,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import os
+import sys
 import requests
 from pytdx.reader.history_financial_reader import HistoryFinancialReader
 from pytdx.crawler.history_financial_crawler import HistoryFinancialCrawler, HistoryFinancialListCrawler
+
+from QUANTAXIS.QASU.save_local import qa_path
 """
 参见PYTDX 1.65
 """
@@ -46,9 +50,29 @@ def download():
     result = get_filename()
     for item in result:
         r = requests.get('http://down.tdx.com.cn:8001/fin/{}'.format(item))
-        with open(item, "wb") as code:
+
+        file = '{}{}{}{}{}'.format(qa_path, os.sep, 'downloads', os.sep, item)
+        with open(file, "wb") as code:
             code.write(r.content)
 
 
 def get_and_parse(filename):
-    return HistoryFinancialReader.get_df(filename)
+    return HistoryFinancialReader().get_df(filename)
+
+
+def prase_all():
+    """
+    解析目录下的所有文件
+    """
+    filepath = '{}{}{}{}'.format(qa_path, os.sep, 'downloads', os.sep)
+    filename = os.listdir(filepath)
+    data = []
+    for item in filename:
+        file = '{}{}{}{}{}'.format(qa_path, os.sep, 'downloads', os.sep, item)
+        data += get_and_parse(file)
+    return data
+
+
+if __name__ == '__main__':
+    # download()
+    prase_all()

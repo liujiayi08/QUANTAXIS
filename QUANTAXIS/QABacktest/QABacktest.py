@@ -38,6 +38,7 @@ from QUANTAXIS.QAUtil.QAParameter import (AMOUNT_MODEL, BROKER_EVENT,
                                           ORDER_MODEL)
 
 
+
 class QA_Backtest():
     """BACKTEST
 
@@ -146,6 +147,9 @@ class QA_Backtest():
         self.market.trade_engine.stop_all()
         self.market.trade_engine.stop()
 
+
+class BACKTEST_FRAMEWORK():
+    pass
 
 if __name__ == '__main__':
     backtest = QA_Backtest(market_type=MARKET_TYPE.STOCK_CN,
